@@ -85,7 +85,7 @@ function initMap() {
 function addHromadyLayer(geojson) {
   hromadyLayer = L.geoJSON(geojson, {
     renderer: L.canvas(),
-    style: { weight: 0.6, color: '#b0b8c8', fill: false },
+    style: { weight: 0.6, color: '#b0b8c8', fill: true, fillOpacity: 0 },
     onEachFeature(feature, layer) {
       const name = feature.properties.adm3_name1 || '';
       layer.bindTooltip(name, {
