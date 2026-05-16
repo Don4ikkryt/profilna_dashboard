@@ -6,7 +6,7 @@ const UKRAINE_BOUNDS = L.latLngBounds([44.0, 22.0], [52.5, 40.5]);
 
 function createPieSVG(clusters, size) {
   const colors = clusters.length > 0
-    ? clusters.map(c => CONFIG.CLUSTER_COLORS[c] || CONFIG.CLUSTER_COLORS.default)
+    ? clusters.map(c => getClusterColor(c))
     : [CONFIG.CLUSTER_COLORS.default];
 
   const cx = size / 2, cy = size / 2;
@@ -48,8 +48,7 @@ function createPieIcon(clusters, size = 16) {
 
 function buildTooltipHTML(lyceum) {
   const badges = lyceum.clusters.map(c => {
-    const color = CONFIG.CLUSTER_COLORS[c] || CONFIG.CLUSTER_COLORS.default;
-    return `<span class="cluster-badge" style="background:${color}">${c}</span>`;
+    return `<span class="cluster-badge" style="background:${getClusterColor(c)}">${c}</span>`;
   }).join('');
 
   return `

@@ -38,7 +38,7 @@ function renderProfiles(profiles) {
   return `
     <div class="profiles-grid">
       ${profiles.map(p => {
-        const color = CONFIG.CLUSTER_COLORS[p.cluster] || CONFIG.CLUSTER_COLORS.default;
+        const color = getClusterColor(p.cluster);
         return `
           <div class="profile-card">
             <div class="profile-header">
