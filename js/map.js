@@ -2,30 +2,42 @@ let map, markerLayer, hromadyLayer, oblastiLayer;
 
 const UKRAINE_BOUNDS = L.latLngBounds([44.0, 22.0], [52.5, 40.5]);
 
-// ── Pie marker icon ────────────────────────────────
+// ── Pie marker icon (SVG) ──────────────────────────
 
-function createPieIcon(clusters, size = 16) {
-  const colors = clusters.map(c => CONFIG.CLUSTER_COLORS[c] || CONFIG.CLUSTER_COLORS.default);
+function createPieSVG(clusters, size) {
+  const colors = clusters.length > 0
+    ? clusters.map(c => CONFIG.CLUSTER_COLORS[c] || CONFIG.CLUSTER_COLORS.default)
+    : [CONFIG.CLUSTER_COLORS.default];
 
-  let background;
-  if (colors.length === 0) {
-    background = CONFIG.CLUSTER_COLORS.default;
-  } else if (colors.length === 1) {
-    background = colors[0];
-  } else {
-    const pct = 100 / colors.length;
-    const stops = colors.map((c, i) =>
-      `${c} ${(i * pct).toFixed(2)}%, ${c} ${((i + 1) * pct).toFixed(2)}%`
-    ).join(', ');
-    background = `conic-gradient(${stops})`;
+  const cx = size / 2, cy = size / 2;
+  const r = size / 2 - 2; // 2px border gap
+
+  if (colors.length === 1) {
+    return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="${colors[0]}" stroke="#fff" stroke-width="2"/>
+    </svg>`;
   }
 
+  const step = (2 * Math.PI) / colors.length;
+  const slices = colors.map((color, i) => {
+    const a1 = i * step - Math.PI / 2;
+    const a2 = (i + 1) * step - Math.PI / 2;
+    const x1 = cx + r * Math.cos(a1), y1 = cy + r * Math.sin(a1);
+    const x2 = cx + r * Math.cos(a2), y2 = cy + r * Math.sin(a2);
+    const large = step > Math.PI ? 1 : 0;
+    return `<path d="M${cx},${cy} L${x1.toFixed(2)},${y1.toFixed(2)} A${r},${r} 0 ${large},1 ${x2.toFixed(2)},${y2.toFixed(2)} Z" fill="${color}"/>`;
+  }).join('');
+
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">
+    ${slices}
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#fff" stroke-width="2"/>
+  </svg>`;
+}
+
+function createPieIcon(clusters, size = 16) {
   return L.divIcon({
-    className: '',
-    html: `<div class="pie-marker" style="
-      width:${size}px;height:${size}px;
-      background:${background};
-    "></div>`,
+    className: 'pie-icon-wrap',
+    html: createPieSVG(clusters, size),
     iconSize: [size, size],
     iconAnchor: [size / 2, size / 2],
     tooltipAnchor: [0, -(size / 2) - 4]
