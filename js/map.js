@@ -34,7 +34,9 @@ function createPieSVG(clusters, size) {
   </svg>`;
 }
 
-function createPieIcon(clusters, size = 16) {
+const isTouchDevice = () => window.matchMedia('(pointer: coarse)').matches;
+
+function createPieIcon(clusters, size = isTouchDevice() ? 20 : 16) {
   return L.divIcon({
     className: 'pie-icon-wrap',
     html: createPieSVG(clusters, size),
@@ -132,12 +134,13 @@ function updateMarkers(lyceums) {
       window.location.href = `lyceum.html?id=${encodeURIComponent(lyceum.id)}`;
     });
 
+    const baseSize = isTouchDevice() ? 20 : 16;
     marker.on('mouseover', function() {
-      this.setIcon(createPieIcon(lyceum.clusters, 22));
+      this.setIcon(createPieIcon(lyceum.clusters, baseSize + 6));
       this.openTooltip();
     });
     marker.on('mouseout', function() {
-      this.setIcon(createPieIcon(lyceum.clusters, 16));
+      this.setIcon(createPieIcon(lyceum.clusters, baseSize));
     });
 
     markerLayer.addLayer(marker);

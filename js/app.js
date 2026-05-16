@@ -40,4 +40,22 @@ async function init() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', init);
+function initMobileSidebar() {
+  const btn     = document.getElementById('mobile-filter-btn');
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  if (!btn || !sidebar || !overlay) return;
+
+  function open()  { sidebar.classList.add('mobile-open');    overlay.classList.add('active'); }
+  function close() { sidebar.classList.remove('mobile-open'); overlay.classList.remove('active'); }
+
+  btn.addEventListener('click', () =>
+    sidebar.classList.contains('mobile-open') ? close() : open()
+  );
+  overlay.addEventListener('click', close);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  init();
+  initMobileSidebar();
+});

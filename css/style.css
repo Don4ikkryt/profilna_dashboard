@@ -701,10 +701,65 @@ input[type="radio"], input[type="checkbox"] {
   color: var(--gray-500);
 }
 
+/* ── Mobile filter button (hidden on desktop) ────── */
+.mobile-filter-btn {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,.15);
+  border: none;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.mobile-filter-btn:hover { background: rgba(255,255,255,.25); }
+
+/* ── Sidebar overlay (mobile backdrop) ───────────── */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.4);
+  z-index: 900;
+}
+
+.sidebar-overlay.active { display: block; }
+
 /* ── Responsive ──────────────────────────────────── */
 @media (max-width: 768px) {
-  .sidebar { width: 260px; min-width: 260px; }
+  html, body { overflow: hidden; }
+
+  .mobile-filter-btn { display: flex; }
+
+  .header-subtitle { display: none; }
+
+  .sidebar {
+    position: fixed;
+    top: 56px;
+    left: 0;
+    height: calc(100vh - 56px);
+    z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform .25s ease;
+    box-shadow: 4px 0 16px rgba(0,0,0,.2);
+    width: 290px;
+    min-width: 290px;
+  }
+
+  .sidebar.mobile-open { transform: translateX(0); }
+
+  .map-container { width: 100%; }
+
   .profiles-grid { grid-template-columns: 1fr; }
   .detail-body { padding: 16px 12px 40px; }
   .page-header h1 { font-size: 15px; }
+
+  .map-legend { display: none; }
 }
