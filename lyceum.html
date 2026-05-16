@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ліцей — Академічні ліцеї України</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    html, body { height: auto; overflow: auto; background: var(--gray-100); }
+  </style>
+</head>
+<body>
+
+<!-- Loading overlay -->
+<div id="loading-overlay" class="loading-overlay" style="position:fixed">
+  <div class="spinner"></div>
+  <div>Завантаження…</div>
+</div>
+
+<div id="main-content">
+  <!-- Page header -->
+  <div class="page-header">
+    <a href="index.html" class="btn-back">← Карта</a>
+    <div style="flex:1">
+      <h1 id="lyceum-name">…</h1>
+      <div class="detail-id" id="lyceum-id"></div>
+    </div>
+    <div class="oblast-tag" id="lyceum-oblast"></div>
+  </div>
+
+  <!-- Body -->
+  <div class="detail-body">
+
+    <!-- General info -->
+    <div class="detail-section">
+      <div class="detail-section-title">Загальна інформація</div>
+      <div id="section-info"></div>
+    </div>
+
+    <!-- Profiles -->
+    <div class="detail-section">
+      <div class="detail-section-title">Кластери та профілі</div>
+      <div id="section-profiles"></div>
+    </div>
+
+    <!-- Apply button -->
+    <a href="https://docs.google.com/forms" target="_blank" class="btn-apply">
+      Подати заявку
+    </a>
+
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/data.js"></script>
+<script src="js/lyceum.js"></script>
+
+</body>
+</html>

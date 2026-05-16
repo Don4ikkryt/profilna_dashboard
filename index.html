@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Академічні ліцеї України</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ── Header ─────────────────────────────────────── -->
+<header class="header">
+  <div class="header-logo">🎓</div>
+  <div>
+    <div class="header-title">Академічні ліцеї України</div>
+    <div class="header-subtitle">Пілотний проєкт · Інтерактивна карта</div>
+  </div>
+  <div class="header-spacer"></div>
+  <div class="header-badge" id="header-count">Завантаження…</div>
+</header>
+
+<!-- ── Main layout ────────────────────────────────── -->
+<div class="layout">
+
+  <!-- ── Sidebar ─────────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <!-- Search -->
+      <div class="search-wrap">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input id="filter-search" class="search-input" type="text" placeholder="Пошук за назвою закладу…">
+      </div>
+
+      <!-- Oblast -->
+      <div class="filter-group">
+        <span class="filter-label">Область</span>
+        <select id="filter-oblast" class="filter-select">
+          <option value="">Всі області</option>
+        </select>
+      </div>
+
+      <!-- Hromada -->
+      <div class="filter-group">
+        <span class="filter-label">Громада</span>
+        <select id="filter-hromada" class="filter-select">
+          <option value="">Всі громади</option>
+        </select>
+      </div>
+
+      <hr class="divider">
+
+      <!-- Locality -->
+      <div class="filter-group">
+        <span class="filter-label">Місцевість</span>
+        <select id="filter-locality" class="filter-select">
+          <option value="">Всі</option>
+          <option value="міська">Міська</option>
+          <option value="сільська">Сільська</option>
+        </select>
+      </div>
+
+      <!-- Clusters (multi) -->
+      <div class="filter-group">
+        <span class="filter-label">Кластери</span>
+        <div class="multiselect" id="dd-clusters">
+          <button type="button" class="multiselect-btn">
+            <span class="multiselect-label">Всі кластери</span>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="multiselect-panel">
+            <label class="multiselect-option">
+              <input type="checkbox" data-cluster value="STEM">
+              <span class="cluster-dot" style="background:#2563eb"></span>
+              STEM
+            </label>
+            <label class="multiselect-option">
+              <input type="checkbox" data-cluster value="Мовно-літературний">
+              <span class="cluster-dot" style="background:#16a34a"></span>
+              Мовно-літературний
+            </label>
+            <label class="multiselect-option">
+              <input type="checkbox" data-cluster value="Соціально-гуманітарний">
+              <span class="cluster-dot" style="background:#ea580c"></span>
+              Соціально-гуманітарний
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Education form (multi, populated dynamically) -->
+      <div class="filter-group">
+        <span class="filter-label">Форма навчання</span>
+        <div class="multiselect" id="dd-edu">
+          <button type="button" class="multiselect-btn">
+            <span class="multiselect-label">Всі форми</span>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="multiselect-panel" id="filter-edu-forms"></div>
+        </div>
+      </div>
+
+      <!-- Boarding -->
+      <div class="filter-group">
+        <span class="filter-label">Пансіон</span>
+        <select id="filter-boarding" class="filter-select">
+          <option value="">Всі</option>
+          <option value="так">Є пансіон</option>
+          <option value="ні">Без пансіону</option>
+        </select>
+      </div>
+
+      <!-- Mountain -->
+      <div class="filter-group">
+        <span class="filter-label">Гірський заклад</span>
+        <select id="filter-mountain" class="filter-select">
+          <option value="">Всі</option>
+          <option value="так">Гірський</option>
+          <option value="ні">Не гірський</option>
+        </select>
+      </div>
+
+      <hr class="divider">
+
+      <button id="btn-reset" class="btn-reset">Скинути фільтри</button>
+
+    </div><!-- /sidebar-inner -->
+
+    <!-- Counter -->
+    <div class="stats-strip">
+      <div id="stat-count" class="stat-counter">Завантаження…</div>
+    </div>
+
+  </aside><!-- /sidebar -->
+
+  <!-- ── Map container ─────────────────────────── -->
+  <div class="map-container">
+    <div id="map"></div>
+
+    <!-- Loading overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+      <div class="spinner"></div>
+      <div>Завантаження даних…</div>
+    </div>
+
+    <!-- Legend -->
+    <div class="map-legend">
+      <h4>Легенда</h4>
+      <div class="legend-item">
+        <span class="legend-dot" style="background:#2563eb"></span>
+        STEM
+      </div>
+      <div class="legend-item">
+        <span class="legend-dot" style="background:#16a34a"></span>
+        Мовно-літературний
+      </div>
+      <div class="legend-item">
+        <span class="legend-dot" style="background:#ea580c"></span>
+        Соціально-гуманітарний
+      </div>
+      <div class="legend-item">
+        <span class="legend-dot" style="background:conic-gradient(#2563eb 33%,#16a34a 33% 66%,#ea580c 66%)"></span>
+        Кілька кластерів
+      </div>
+    </div>
+
+  </div><!-- /map-container -->
+
+</div><!-- /layout -->
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/data.js"></script>
+<script src="js/map.js"></script>
+<script src="js/filters.js"></script>
+<script src="js/app.js"></script>
+
+<script>
+  // Update header counter when stat-count updates
+  const observer = new MutationObserver(() => {
+    const src = document.getElementById('stat-count');
+    const dst = document.getElementById('header-count');
+    if (src && dst) dst.textContent = src.textContent;
+  });
+  document.addEventListener('DOMContentLoaded', () => {
+    const el = document.getElementById('stat-count');
+    if (el) observer.observe(el, { childList: true, subtree: true });
+  });
+</script>
+
+</body>
+</html>
