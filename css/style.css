@@ -464,6 +464,9 @@ input[type="radio"], input[type="checkbox"] {
 
 .pie-icon-wrap:hover { transform: scale(1.2); }
 
+/* Remove focus outline on SVG map polygons */
+.leaflet-interactive:focus { outline: none; }
+
 /* ── Hromada tooltip ─────────────────────────────── */
 .hromada-tooltip {
   font-family: 'Inter', sans-serif;
