@@ -37,31 +37,30 @@ function renderProfiles(profiles) {
 
   return `
     <div class="profiles-grid">
-      ${profiles.map(p => {
+      ${profiles.map((p, i) => {
         const color = getClusterColor(p.cluster);
+        const fields = [
+          p.deepSubjects    && { label: 'Предмети поглибленого рівня', value: p.deepSubjects },
+          p.electivesWithin && { label: 'Вибіркові в межах профілю',   value: p.electivesWithin },
+          p.electivesOutside && { label: 'Вибіркові поза профілем',     value: p.electivesOutside }
+        ].filter(Boolean);
+
         return `
-          <div class="profile-card">
+          <div class="profile-card" style="--c:${color}">
             <div class="profile-header">
+              <div class="profile-num">${i + 1}</div>
               <div class="profile-name">${p.name || 'Профіль'}</div>
               <span class="profile-cluster-badge" style="background:${color}">${p.cluster}</span>
-              ${p.studentCount ? `<span class="profile-students">👥 ${p.studentCount} учн.</span>` : ''}
+              ${p.studentCount ? `<span class="profile-students">${p.studentCount} учн.</span>` : ''}
             </div>
-            ${p.deepSubjects ? `
-              <div class="profile-row">
-                <div class="profile-row-label">Предмети поглибленого рівня</div>
-                <div class="profile-row-value">${p.deepSubjects}</div>
-              </div>
-            ` : ''}
-            ${p.electivesWithin ? `
-              <div class="profile-row">
-                <div class="profile-row-label">Вибіркові в межах профілю</div>
-                <div class="profile-row-value">${p.electivesWithin}</div>
-              </div>
-            ` : ''}
-            ${p.electivesOutside ? `
-              <div class="profile-row">
-                <div class="profile-row-label">Вибіркові поза профілем</div>
-                <div class="profile-row-value">${p.electivesOutside}</div>
+            ${fields.length ? `
+              <div class="profile-fields">
+                ${fields.map(f => `
+                  <div class="profile-field">
+                    <div class="profile-field-label">${f.label}</div>
+                    <div class="profile-field-value">${f.value}</div>
+                  </div>
+                `).join('')}
               </div>
             ` : ''}
           </div>
