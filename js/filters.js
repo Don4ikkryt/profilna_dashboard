@@ -165,13 +165,6 @@ function populateFilters(lyceums) {
 function bindFilterEvents() {
   initMultiselects();
 
-  // Global search
-  let searchTimer;
-  document.getElementById('filter-search').addEventListener('input', e => {
-    clearTimeout(searchTimer);
-    searchTimer = setTimeout(() => { state.search = e.target.value.trim(); applyFilters(); }, 250);
-  });
-
   // Oblast
   document.getElementById('filter-oblast').addEventListener('change', e => {
     state.oblast = e.target.value;
@@ -239,8 +232,7 @@ function resetFilters() {
   });
   _lyceumSearchQuery = '';
 
-  document.getElementById('filter-search').value = '';
-  document.getElementById('filter-oblast').value = '';
+document.getElementById('filter-oblast').value = '';
   document.getElementById('filter-hromada').value = '';
   document.getElementById('filter-locality').value = '';
   document.getElementById('filter-boarding').value = '';
