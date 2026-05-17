@@ -58,6 +58,7 @@ function buildTooltipHTML(lyceum) {
     <div class="tooltip-name">${lyceum.name}</div>
     <div class="tooltip-meta">Громада: ${lyceum.hromada || '—'}</div>
     ${badges ? `<div class="tooltip-clusters">${badges}</div>` : ''}
+    <div class="tooltip-hint">Натисніть для деталей →</div>
   `;
 }
 

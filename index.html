@@ -36,17 +36,37 @@
       <!-- Oblast -->
       <div class="filter-group">
         <span class="filter-label">Область</span>
-        <select id="filter-oblast" class="filter-select">
-          <option value="">Всі області</option>
-        </select>
+        <div class="multiselect" id="dd-oblast">
+          <button type="button" class="multiselect-btn">
+            <span class="multiselect-label">Всі області</span>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="multiselect-panel lyceum-panel">
+            <div class="multiselect-search-wrap">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="oblast-search" class="multiselect-search" placeholder="Пошук…">
+            </div>
+            <div id="oblast-list" class="multiselect-list"></div>
+          </div>
+        </div>
       </div>
 
       <!-- Hromada -->
       <div class="filter-group">
         <span class="filter-label">Громада</span>
-        <select id="filter-hromada" class="filter-select">
-          <option value="">Всі громади</option>
-        </select>
+        <div class="multiselect" id="dd-hromada">
+          <button type="button" class="multiselect-btn">
+            <span class="multiselect-label">Всі громади</span>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="multiselect-panel lyceum-panel">
+            <div class="multiselect-search-wrap">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="hromada-search" class="multiselect-search" placeholder="Пошук…">
+            </div>
+            <div id="hromada-list" class="multiselect-list"></div>
+          </div>
+        </div>
       </div>
 
       <!-- Lyceum (multi + search) -->
@@ -72,11 +92,17 @@
       <!-- Locality -->
       <div class="filter-group">
         <span class="filter-label">Місцевість</span>
-        <select id="filter-locality" class="filter-select">
-          <option value="">Всі</option>
-          <option value="міська">Міська</option>
-          <option value="сільська">Сільська</option>
-        </select>
+        <div class="multiselect" id="dd-locality">
+          <button type="button" class="multiselect-btn">
+            <span class="multiselect-label">Всі</span>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="multiselect-panel">
+            <div class="ss-opt active" data-dd="dd-locality" data-value="">Всі</div>
+            <div class="ss-opt" data-dd="dd-locality" data-value="міська">Міська</div>
+            <div class="ss-opt" data-dd="dd-locality" data-value="сільська">Сільська</div>
+          </div>
+        </div>
       </div>
 
       <!-- Clusters (multi) -->
@@ -122,21 +148,33 @@
       <!-- Boarding -->
       <div class="filter-group">
         <span class="filter-label">Пансіон</span>
-        <select id="filter-boarding" class="filter-select">
-          <option value="">Всі</option>
-          <option value="так">Є пансіон</option>
-          <option value="ні">Без пансіону</option>
-        </select>
+        <div class="multiselect" id="dd-boarding">
+          <button type="button" class="multiselect-btn">
+            <span class="multiselect-label">Всі</span>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="multiselect-panel">
+            <div class="ss-opt active" data-dd="dd-boarding" data-value="">Всі</div>
+            <div class="ss-opt" data-dd="dd-boarding" data-value="так">Є пансіон</div>
+            <div class="ss-opt" data-dd="dd-boarding" data-value="ні">Без пансіону</div>
+          </div>
+        </div>
       </div>
 
       <!-- Mountain -->
       <div class="filter-group">
         <span class="filter-label">Гірський заклад</span>
-        <select id="filter-mountain" class="filter-select">
-          <option value="">Всі</option>
-          <option value="так">Гірський</option>
-          <option value="ні">Не гірський</option>
-        </select>
+        <div class="multiselect" id="dd-mountain">
+          <button type="button" class="multiselect-btn">
+            <span class="multiselect-label">Всі</span>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="multiselect-panel">
+            <div class="ss-opt active" data-dd="dd-mountain" data-value="">Всі</div>
+            <div class="ss-opt" data-dd="dd-mountain" data-value="так">Гірський</div>
+            <div class="ss-opt" data-dd="dd-mountain" data-value="ні">Не гірський</div>
+          </div>
+        </div>
       </div>
 
       <hr class="divider">

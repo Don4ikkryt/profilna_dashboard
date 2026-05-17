@@ -13,12 +13,15 @@ const state = {
   mountain: ''
 };
 
+let _oblastSearch  = '';
+let _hromadaSearch = '';
+let _lyceumSearchQuery = '';
+
 // ── Multiselect toggle ─────────────────────────────
 
 function initMultiselects() {
   document.querySelectorAll('.multiselect').forEach(dd => {
-    const btn = dd.querySelector('.multiselect-btn');
-    btn.addEventListener('click', e => {
+    dd.querySelector('.multiselect-btn').addEventListener('click', e => {
       e.stopPropagation();
       const isOpen = dd.classList.contains('open');
       closeAllMultiselects();
@@ -38,17 +41,157 @@ function updateMultiselectLabel(ddId, values, placeholder) {
   label.textContent = values.length === 0 ? placeholder : `Обрано: ${values.length}`;
 }
 
+function setSingleLabel(ddId, value, placeholder) {
+  const label = document.querySelector(`#${ddId} .multiselect-label`);
+  if (label) label.textContent = value || placeholder;
+}
+
+// ── Single-select options (Місцевість, Пансіон, Гірський) ──
+
+function initSingleSelects() {
+  document.querySelectorAll('.ss-opt').forEach(opt => {
+    opt.addEventListener('click', e => {
+      e.stopPropagation();
+      const ddId  = opt.dataset.dd;
+      const value = opt.dataset.value;
+      const dd    = document.getElementById(ddId);
+
+      dd.querySelectorAll('.ss-opt').forEach(o => o.classList.remove('active'));
+      opt.classList.add('active');
+      closeAllMultiselects();
+
+      if (ddId === 'dd-locality') { state.locality = value; setSingleLabel(ddId, opt.textContent.trim() !== 'Всі' ? opt.textContent.trim() : '', 'Всі'); }
+      if (ddId === 'dd-boarding') { state.boarding = value; setSingleLabel(ddId, opt.textContent.trim() !== 'Всі' ? opt.textContent.trim() : '', 'Всі'); }
+      if (ddId === 'dd-mountain') { state.mountain = value; setSingleLabel(ddId, opt.textContent.trim() !== 'Всі' ? opt.textContent.trim() : '', 'Всі'); }
+      applyFilters();
+    });
+  });
+}
+
+// ── Searchable single-select (Oblast, Hromada) ─────
+
+function renderOblastList() {
+  const container = document.getElementById('oblast-list');
+  if (!container) return;
+  const q = _oblastSearch.toLowerCase();
+  const oblasts = [...new Set(allLyceums.map(l => l.oblast).filter(Boolean))]
+    .sort((a, b) => a.localeCompare(b, 'uk'))
+    .filter(o => !q || o.toLowerCase().includes(q));
+
+  container.innerHTML = '';
+
+  const allDiv = makeSSRow('', 'Всі області', state.oblast === '');
+  allDiv.addEventListener('click', e => { e.stopPropagation(); selectOblast('', 'Всі області'); });
+  container.appendChild(allDiv);
+
+  oblasts.forEach(o => {
+    const row = makeSSRow(o, o, state.oblast === o);
+    row.addEventListener('click', e => { e.stopPropagation(); selectOblast(o, o); });
+    container.appendChild(row);
+  });
+}
+
+function selectOblast(value, label) {
+  state.oblast  = value;
+  state.hromada = '';
+  state.lyceums = [];
+  setSingleLabel('dd-oblast',  value ? label : '', 'Всі області');
+  setSingleLabel('dd-hromada', '', 'Всі громади');
+  updateMultiselectLabel('dd-lyceum', [], 'Всі заклади');
+  closeAllMultiselects();
+  renderOblastList();
+  renderHromadaList();
+  renderLyceumList();
+  applyFilters();
+}
+
+function renderHromadaList() {
+  const container = document.getElementById('hromada-list');
+  if (!container) return;
+  const q = _hromadaSearch.toLowerCase();
+  let base = allLyceums;
+  if (state.oblast) base = base.filter(l => l.oblast === state.oblast);
+  const hromady = [...new Set(base.map(l => l.hromada).filter(Boolean))]
+    .sort((a, b) => a.localeCompare(b, 'uk'))
+    .filter(h => !q || h.toLowerCase().includes(q));
+
+  container.innerHTML = '';
+
+  const allDiv = makeSSRow('', 'Всі громади', state.hromada === '');
+  allDiv.addEventListener('click', e => { e.stopPropagation(); selectHromada('', 'Всі громади'); });
+  container.appendChild(allDiv);
+
+  hromady.forEach(h => {
+    const row = makeSSRow(h, h, state.hromada === h);
+    row.addEventListener('click', e => { e.stopPropagation(); selectHromada(h, h); });
+    container.appendChild(row);
+  });
+}
+
+function selectHromada(value, label) {
+  state.hromada = value;
+  state.lyceums = [];
+  setSingleLabel('dd-hromada', value ? label : '', 'Всі громади');
+  updateMultiselectLabel('dd-lyceum', [], 'Всі заклади');
+  closeAllMultiselects();
+  renderHromadaList();
+  renderLyceumList();
+  applyFilters();
+}
+
+function makeSSRow(value, label, isActive) {
+  const div = document.createElement('div');
+  div.className = 'multiselect-option ss-row' + (isActive ? ' active' : '');
+  div.dataset.value = value;
+  div.textContent = label;
+  return div;
+}
+
+// ── Lyceum multiselect with search ────────────────
+
+function getLyceumPool() {
+  let base = allLyceums;
+  if (state.oblast)  base = base.filter(l => l.oblast  === state.oblast);
+  if (state.hromada) base = base.filter(l => l.hromada === state.hromada);
+  return [...base].sort((a, b) => a.name.localeCompare(b.name, 'uk'));
+}
+
+function renderLyceumList() {
+  const container = document.getElementById('filter-lyceum-list');
+  if (!container) return;
+  const q = _lyceumSearchQuery.toLowerCase();
+  const pool = getLyceumPool();
+  const visible = q ? pool.filter(l => l.name.toLowerCase().includes(q)) : pool;
+  container.innerHTML = '';
+  if (visible.length === 0) {
+    container.innerHTML = '<div class="multiselect-empty">Нічого не знайдено</div>';
+    return;
+  }
+  visible.forEach(l => {
+    const label = document.createElement('label');
+    label.className = 'multiselect-option';
+    const checked = state.lyceums.includes(l.id) ? 'checked' : '';
+    label.innerHTML = `<input type="checkbox" data-lyceum value="${l.id}" ${checked}> ${l.name}`;
+    label.querySelector('input').addEventListener('change', cb => {
+      if (cb.target.checked) { if (!state.lyceums.includes(l.id)) state.lyceums.push(l.id); }
+      else { state.lyceums = state.lyceums.filter(id => id !== l.id); }
+      updateMultiselectLabel('dd-lyceum', state.lyceums, 'Всі заклади');
+      applyFilters();
+    });
+    container.appendChild(label);
+  });
+}
+
 // ── Filter application ─────────────────────────────
 
 function applyFilters() {
   filteredLyceums = allLyceums.filter(l => {
-    if (state.search && !l.name.toLowerCase().includes(state.search.toLowerCase())) return false;
-    if (state.oblast && l.oblast !== state.oblast) return false;
+    if (state.oblast  && l.oblast  !== state.oblast)  return false;
     if (state.hromada && l.hromada !== state.hromada) return false;
     if (state.lyceums.length > 0 && !state.lyceums.includes(l.id)) return false;
     if (state.locality) {
       const loc = l.locality || '';
-      if (state.locality === 'міська'  && !loc.includes('місь')) return false;
+      if (state.locality === 'міська'   && !loc.includes('місь')) return false;
       if (state.locality === 'сільська' && !loc.includes('сіл'))  return false;
     }
     if (state.clusters.length > 0) {
@@ -68,83 +211,13 @@ function applyFilters() {
 
   updateMarkers(filteredLyceums);
   updateCounter(filteredLyceums.length, allLyceums.length);
-  syncHromadaOptions();
-  renderLyceumList();
 }
 
-// ── Cascading selects ──────────────────────────────
-
-function syncHromadaOptions() {
-  const sel = document.getElementById('filter-hromada');
-  if (!sel) return;
-  const base = state.oblast ? allLyceums.filter(l => l.oblast === state.oblast) : allLyceums;
-  const hromady = [...new Set(base.map(l => l.hromada).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'uk'));
-  const current = sel.value;
-  sel.innerHTML = '<option value="">Всі громади</option>';
-  hromady.forEach(h => {
-    const opt = document.createElement('option');
-    opt.value = h; opt.textContent = h;
-    if (h === current) opt.selected = true;
-    sel.appendChild(opt);
-  });
-}
-
-// ── Lyceum multiselect with search ────────────────
-
-let _lyceumSearchQuery = '';
-
-function getLyceumPool() {
-  let base = allLyceums;
-  if (state.oblast)  base = base.filter(l => l.oblast  === state.oblast);
-  if (state.hromada) base = base.filter(l => l.hromada === state.hromada);
-  return [...base].sort((a, b) => a.name.localeCompare(b.name, 'uk'));
-}
-
-function renderLyceumList() {
-  const container = document.getElementById('filter-lyceum-list');
-  if (!container) return;
-
-  const pool = getLyceumPool();
-  const q = _lyceumSearchQuery.toLowerCase();
-  const visible = q ? pool.filter(l => l.name.toLowerCase().includes(q)) : pool;
-
-  container.innerHTML = '';
-
-  if (visible.length === 0) {
-    container.innerHTML = '<div class="multiselect-empty">Нічого не знайдено</div>';
-    return;
-  }
-
-  visible.forEach(l => {
-    const label = document.createElement('label');
-    label.className = 'multiselect-option';
-    const checked = state.lyceums.includes(l.id) ? 'checked' : '';
-    label.innerHTML = `<input type="checkbox" data-lyceum value="${l.id}" ${checked}> ${l.name}`;
-    label.querySelector('input').addEventListener('change', cb => {
-      if (cb.target.checked) {
-        if (!state.lyceums.includes(l.id)) state.lyceums.push(l.id);
-      } else {
-        state.lyceums = state.lyceums.filter(id => id !== l.id);
-      }
-      updateMultiselectLabel('dd-lyceum', state.lyceums, 'Всі заклади');
-      applyFilters();
-    });
-    container.appendChild(label);
-  });
-}
-
-// ── Populate dynamic options ───────────────────────
+// ── Populate on load ───────────────────────────────
 
 function populateFilters(lyceums) {
-  const oblasts = [...new Set(lyceums.map(l => l.oblast).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'uk'));
-  const oblastSel = document.getElementById('filter-oblast');
-  oblasts.forEach(o => {
-    const opt = document.createElement('option');
-    opt.value = o; opt.textContent = o;
-    oblastSel.appendChild(opt);
-  });
-
-  const forms = [...new Set(lyceums.map(l => l.educationForm).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'uk'));
+  const forms = [...new Set(lyceums.map(l => l.educationForm).filter(Boolean))]
+    .sort((a, b) => a.localeCompare(b, 'uk'));
   const eduPanel = document.getElementById('filter-edu-forms');
   eduPanel.innerHTML = '';
   forms.forEach(f => {
@@ -159,7 +232,8 @@ function populateFilters(lyceums) {
     });
   });
 
-  syncHromadaOptions();
+  renderOblastList();
+  renderHromadaList();
   renderLyceumList();
 }
 
@@ -167,41 +241,28 @@ function populateFilters(lyceums) {
 
 function bindFilterEvents() {
   initMultiselects();
+  initSingleSelects();
 
-  // Oblast
-  document.getElementById('filter-oblast').addEventListener('change', e => {
-    state.oblast = e.target.value;
-    state.hromada = '';
-    state.lyceums = [];
-    document.getElementById('filter-hromada').value = '';
-    updateMultiselectLabel('dd-lyceum', [], 'Всі заклади');
-    syncHromadaOptions();
-    applyFilters();
-  });
-
-  // Hromada
-  document.getElementById('filter-hromada').addEventListener('change', e => {
-    state.hromada = e.target.value;
-    state.lyceums = [];
-    updateMultiselectLabel('dd-lyceum', [], 'Всі заклади');
-    applyFilters();
-  });
-
-  // Lyceum panel search
-  const lyceumSearch = document.getElementById('lyceum-panel-search');
-  if (lyceumSearch) {
-    lyceumSearch.addEventListener('input', e => {
-      _lyceumSearchQuery = e.target.value.trim();
-      renderLyceumList();
-    });
-    // Prevent click on search input from closing the dropdown
-    lyceumSearch.addEventListener('click', e => e.stopPropagation());
+  // Oblast search
+  const oblastSearch = document.getElementById('oblast-search');
+  if (oblastSearch) {
+    oblastSearch.addEventListener('input', e => { _oblastSearch = e.target.value.trim(); renderOblastList(); });
+    oblastSearch.addEventListener('click', e => e.stopPropagation());
   }
 
-  // Locality
-  document.getElementById('filter-locality').addEventListener('change', e => {
-    state.locality = e.target.value; applyFilters();
-  });
+  // Hromada search
+  const hromadaSearch = document.getElementById('hromada-search');
+  if (hromadaSearch) {
+    hromadaSearch.addEventListener('input', e => { _hromadaSearch = e.target.value.trim(); renderHromadaList(); });
+    hromadaSearch.addEventListener('click', e => e.stopPropagation());
+  }
+
+  // Lyceum search
+  const lyceumSearch = document.getElementById('lyceum-panel-search');
+  if (lyceumSearch) {
+    lyceumSearch.addEventListener('input', e => { _lyceumSearchQuery = e.target.value.trim(); renderLyceumList(); });
+    lyceumSearch.addEventListener('click', e => e.stopPropagation());
+  }
 
   // Clusters
   document.querySelectorAll('[data-cluster]').forEach(cb => {
@@ -212,16 +273,6 @@ function bindFilterEvents() {
     });
   });
 
-  // Boarding
-  document.getElementById('filter-boarding').addEventListener('change', e => {
-    state.boarding = e.target.value; applyFilters();
-  });
-
-  // Mountain
-  document.getElementById('filter-mountain').addEventListener('change', e => {
-    state.mountain = e.target.value; applyFilters();
-  });
-
   // Reset
   document.getElementById('btn-reset').addEventListener('click', resetFilters);
 }
@@ -230,25 +281,30 @@ function bindFilterEvents() {
 
 function resetFilters() {
   Object.assign(state, {
-    search: '', oblast: '', hromada: '', lyceums: [],
+    oblast: '', hromada: '', lyceums: [],
     locality: '', clusters: [], educationForms: [], boarding: '', mountain: ''
   });
-  _lyceumSearchQuery = '';
+  _oblastSearch = ''; _hromadaSearch = ''; _lyceumSearchQuery = '';
 
-document.getElementById('filter-oblast').value = '';
-  document.getElementById('filter-hromada').value = '';
-  document.getElementById('filter-locality').value = '';
-  document.getElementById('filter-boarding').value = '';
-  document.getElementById('filter-mountain').value = '';
-  const ps = document.getElementById('lyceum-panel-search');
-  if (ps) ps.value = '';
+  const oblastS = document.getElementById('oblast-search');   if (oblastS)  oblastS.value  = '';
+  const hromadaS = document.getElementById('hromada-search'); if (hromadaS) hromadaS.value = '';
+  const lyceumS = document.getElementById('lyceum-panel-search'); if (lyceumS) lyceumS.value = '';
 
-  document.querySelectorAll('[data-cluster],[data-edu]').forEach(cb => cb.checked = false);
+  setSingleLabel('dd-oblast',   '', 'Всі області');
+  setSingleLabel('dd-hromada',  '', 'Всі громади');
+  setSingleLabel('dd-locality', '', 'Всі');
+  setSingleLabel('dd-boarding', '', 'Всі');
+  setSingleLabel('dd-mountain', '', 'Всі');
+  updateMultiselectLabel('dd-lyceum',   [], 'Всі заклади');
   updateMultiselectLabel('dd-clusters', [], 'Всі кластери');
   updateMultiselectLabel('dd-edu',      [], 'Всі форми');
-  updateMultiselectLabel('dd-lyceum',   [], 'Всі заклади');
 
-  syncHromadaOptions();
+  document.querySelectorAll('.ss-opt').forEach(o => o.classList.toggle('active', o.dataset.value === ''));
+  document.querySelectorAll('[data-cluster],[data-edu]').forEach(cb => cb.checked = false);
+
+  renderOblastList();
+  renderHromadaList();
+  renderLyceumList();
   applyFilters();
 }
 
