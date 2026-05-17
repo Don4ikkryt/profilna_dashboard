@@ -51,7 +51,10 @@ function applyFilters() {
       if (state.locality === 'міська'  && !loc.includes('місь')) return false;
       if (state.locality === 'сільська' && !loc.includes('сіл'))  return false;
     }
-    if (state.clusters.length > 0 && !state.clusters.some(c => l.clusters.includes(c))) return false;
+    if (state.clusters.length > 0) {
+      const lc = l.clusters.map(c => c.toLowerCase());
+      if (!state.clusters.some(c => lc.some(lcc => lcc.includes(c.toLowerCase()) || c.toLowerCase().includes(lcc)))) return false;
+    }
     if (state.educationForms.length > 0) {
       const form = (l.educationForm || '').toLowerCase();
       if (!state.educationForms.some(f => form.includes(f.toLowerCase()))) return false;
