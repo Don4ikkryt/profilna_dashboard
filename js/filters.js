@@ -75,7 +75,7 @@ function syncHromadaOptions() {
   const sel = document.getElementById('filter-hromada');
   if (!sel) return;
   const base = state.oblast ? allLyceums.filter(l => l.oblast === state.oblast) : allLyceums;
-  const hromady = [...new Set(base.map(l => l.hromada).filter(Boolean))].sort();
+  const hromady = [...new Set(base.map(l => l.hromada).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'uk'));
   const current = sel.value;
   sel.innerHTML = '<option value="">Всі громади</option>';
   hromady.forEach(h => {
@@ -133,7 +133,7 @@ function renderLyceumList() {
 // ── Populate dynamic options ───────────────────────
 
 function populateFilters(lyceums) {
-  const oblasts = [...new Set(lyceums.map(l => l.oblast).filter(Boolean))].sort();
+  const oblasts = [...new Set(lyceums.map(l => l.oblast).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'uk'));
   const oblastSel = document.getElementById('filter-oblast');
   oblasts.forEach(o => {
     const opt = document.createElement('option');
@@ -141,7 +141,7 @@ function populateFilters(lyceums) {
     oblastSel.appendChild(opt);
   });
 
-  const forms = [...new Set(lyceums.map(l => l.educationForm).filter(Boolean))].sort();
+  const forms = [...new Set(lyceums.map(l => l.educationForm).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'uk'));
   const eduPanel = document.getElementById('filter-edu-forms');
   eduPanel.innerHTML = '';
   forms.forEach(f => {
