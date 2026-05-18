@@ -1,6 +1,6 @@
 let map, markerLayer, hromadyLayer, oblastiLayer;
 
-const UKRAINE_BOUNDS = L.latLngBounds([44.0, 22.0], [52.5, 40.5]);
+const UKRAINE_BOUNDS = L.latLngBounds([44.0, 16.0], [52.5, 40.5]);
 
 // ── Pie marker icon (SVG) ──────────────────────────
 
@@ -99,6 +99,13 @@ function addHromadyLayer(geojson) {
       layer.on('mouseout',  function() { this.setStyle({ color: '#b0b8c8', weight: 0.6, fillOpacity: 0 }); });
     }
   }).addTo(map);
+
+  map.on('movestart', () => {
+    hromadyLayer.eachLayer(l => {
+      l.closeTooltip();
+      l.setStyle({ color: '#b0b8c8', weight: 0.6, fillOpacity: 0 });
+    });
+  });
 }
 
 function addOblastiLayer(geojson) {
