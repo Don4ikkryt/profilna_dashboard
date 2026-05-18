@@ -12,6 +12,21 @@ function showError(msg) {
   }
 }
 
+function initTabs() {
+  const mapContainer   = document.querySelector('.map-container');
+  const analyticsPanel = document.getElementById('analytics-panel');
+  if (!mapContainer || !analyticsPanel) return;
+  document.querySelectorAll('.header-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.header-tab').forEach(b => b.classList.toggle('active', b === btn));
+      const isAnalytics = btn.dataset.tab === 'analytics';
+      mapContainer.classList.toggle('hidden', isAnalytics);
+      analyticsPanel.classList.toggle('hidden', !isAnalytics);
+      if (isAnalytics) renderAnalytics(allLyceums);
+    });
+  });
+}
+
 async function init() {
   initMap();
 
@@ -25,7 +40,7 @@ async function init() {
     addHromadyLayer(hromadyGeo);
     addOblastiLayer(oblastiGeo);
 
-    allLyceums = lyceums;
+    allLyceums      = lyceums;
     filteredLyceums = lyceums;
 
     buildTrigramIndex(lyceums);
@@ -57,6 +72,8 @@ function initMobileSidebar() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  initCharts();
+  initTabs();
   init();
   initMobileSidebar();
 });
