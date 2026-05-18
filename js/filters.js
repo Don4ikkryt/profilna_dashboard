@@ -17,6 +17,30 @@ let _oblastSearch  = '';
 let _hromadaSearch = '';
 let _lyceumSearchQuery = '';
 
+let _trigramIndex = new Map(); // id → Set<trigram>
+
+function makeTrigrams(str) {
+  const s = str.toLowerCase().replace(/\s+/g, ' ').trim();
+  const tris = new Set();
+  for (let i = 0; i <= s.length - 3; i++) tris.add(s.slice(i, i + 3));
+  return tris;
+}
+
+function buildTrigramIndex(lyceums) {
+  _trigramIndex.clear();
+  lyceums.forEach(l => _trigramIndex.set(l.id, makeTrigrams(l.name)));
+}
+
+function trigramScore(lyceum, query) {
+  const qTris = makeTrigrams(query);
+  if (qTris.size === 0) return 0;
+  const lTris = _trigramIndex.get(lyceum.id);
+  if (!lTris) return 0;
+  let hits = 0;
+  qTris.forEach(t => { if (lTris.has(t)) hits++; });
+  return hits / qTris.size;
+}
+
 // ── Multiselect toggle ─────────────────────────────
 
 function initMultiselects() {
@@ -159,9 +183,22 @@ function getLyceumPool() {
 function renderLyceumList() {
   const container = document.getElementById('filter-lyceum-list');
   if (!container) return;
-  const q = _lyceumSearchQuery.toLowerCase();
+  const q = _lyceumSearchQuery.toLowerCase().trim();
   const pool = getLyceumPool();
-  const visible = q ? pool.filter(l => l.name.toLowerCase().includes(q)) : pool;
+
+  let visible;
+  if (!q) {
+    visible = pool;
+  } else if (q.length < 3) {
+    visible = pool.filter(l => l.name.toLowerCase().includes(q));
+  } else {
+    visible = pool
+      .map(l => ({ lyceum: l, score: trigramScore(l, q) }))
+      .filter(({ score }) => score >= 0.2)
+      .sort((a, b) => b.score - a.score)
+      .map(({ lyceum }) => lyceum);
+  }
+
   container.innerHTML = '';
   if (visible.length === 0) {
     container.innerHTML = '<div class="multiselect-empty">Нічого не знайдено</div>';

@@ -28,6 +28,7 @@ async function init() {
     allLyceums = lyceums;
     filteredLyceums = lyceums;
 
+    buildTrigramIndex(lyceums);
     populateFilters(lyceums);
     bindFilterEvents();
     updateMarkers(lyceums);
