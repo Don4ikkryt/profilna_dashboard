@@ -80,6 +80,38 @@ html, body {
   font-weight: 500;
 }
 
+/* ── Header tabs ─────────────────────────────── */
+.header-tabs {
+  display: flex;
+  gap: 3px;
+  background: rgba(255,255,255,.12);
+  border-radius: 8px;
+  padding: 3px;
+}
+
+.header-tab {
+  padding: 4px 16px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: rgba(255,255,255,.75);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: background .15s, color .15s;
+}
+
+.header-tab.active {
+  background: #fff;
+  color: var(--primary);
+}
+
+.header-tab:hover:not(.active) {
+  color: #fff;
+  background: rgba(255,255,255,.2);
+}
+
 /* ── Layout ──────────────────────────────────────── */
 .layout {
   display: flex;
@@ -132,7 +164,7 @@ html, body {
 
 .chart-wrap {
   position: relative;
-  height: 120px;
+  height: 180px;
 }
 
 /* ── Search ──────────────────────────────────────── */
@@ -378,6 +410,72 @@ input[type="radio"], input[type="checkbox"] {
   flex: 1;
   position: relative;
 }
+
+.map-container.hidden { display: none; }
+
+/* ── Analytics panel ─────────────────────────── */
+.analytics-panel {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  background: var(--gray-100);
+}
+
+.analytics-panel.hidden { display: none; }
+
+.analytics-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+.stat-value {
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--primary);
+  line-height: 1.1;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: var(--gray-500);
+  margin-top: 4px;
+}
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.analytics-chart {
+  background: #fff;
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: var(--shadow);
+}
+
+.analytics-chart--wide {
+  grid-column: 1 / -1;
+}
+
+.chart-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin: 0 0 12px;
+}
+
+.chart-wrap--tall { height: 360px; }
 
 #map {
   width: 100%;
@@ -821,6 +919,10 @@ input[type="radio"], input[type="checkbox"] {
   .sidebar.mobile-open { transform: translateX(0); }
 
   .map-container { width: 100%; }
+
+  .analytics-stats { grid-template-columns: repeat(2, 1fr); }
+  .analytics-grid { grid-template-columns: 1fr; }
+  .analytics-chart--wide { grid-column: 1; }
 
 .detail-body { padding: 16px 12px 40px; }
   .page-header h1 { font-size: 15px; }
