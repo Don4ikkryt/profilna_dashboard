@@ -105,6 +105,13 @@ function addHromadyLayer(geojson) {
       l.closeTooltip();
       l.setStyle({ color: '#b0b8c8', weight: 0.6, fillOpacity: 0 });
     });
+    if (markerLayer) {
+      const baseSize = isTouchDevice() ? 20 : 16;
+      markerLayer.eachLayer(l => {
+        l.closeTooltip();
+        if (l._clusters) l.setIcon(createPieIcon(l._clusters, baseSize));
+      });
+    }
   });
 }
 
@@ -128,9 +135,11 @@ function updateMarkers(lyceums) {
   lyceums.forEach(lyceum => {
     if (!lyceum.lat || !lyceum.lng) return;
 
+    const baseSize = isTouchDevice() ? 20 : 16;
     const marker = L.marker([lyceum.lat, lyceum.lng], {
-      icon: createPieIcon(lyceum.clusters)
+      icon: createPieIcon(lyceum.clusters, baseSize)
     });
+    marker._clusters = lyceum.clusters;
 
     marker.bindTooltip(buildTooltipHTML(lyceum), {
       direction: 'top',
@@ -141,13 +150,13 @@ function updateMarkers(lyceums) {
       window.location.href = `lyceum.html?id=${encodeURIComponent(lyceum.id)}`;
     });
 
-    const baseSize = isTouchDevice() ? 20 : 16;
     marker.on('mouseover', function() {
       this.setIcon(createPieIcon(lyceum.clusters, baseSize + 6));
       this.openTooltip();
     });
     marker.on('mouseout', function() {
       this.setIcon(createPieIcon(lyceum.clusters, baseSize));
+      this.closeTooltip();
     });
 
     markerLayer.addLayer(marker);
