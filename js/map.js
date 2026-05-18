@@ -148,3 +148,8 @@ function updateMarkers(lyceums) {
 
   markerLayer.addTo(map);
 }
+
+function fitToMarkers() {
+  if (!markerLayer || markerLayer.getLayers().length === 0) return;
+  map.fitBounds(markerLayer.getBounds(), { padding: [60, 60], maxZoom: 14 });
+}

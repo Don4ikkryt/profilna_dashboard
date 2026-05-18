@@ -189,7 +189,7 @@ function renderLyceumList() {
   let visible;
   if (!q) {
     visible = pool;
-  } else if (q.length < 3) {
+  } else if (q.length <= 3) {
     visible = pool.filter(l => l.name.toLowerCase().includes(q));
   } else {
     visible = pool
@@ -247,6 +247,9 @@ function applyFilters() {
   });
 
   updateMarkers(filteredLyceums);
+  if (state.lyceums.length > 0 && filteredLyceums.length > 0 && filteredLyceums.length <= 20) {
+    fitToMarkers();
+  }
   updateCounter(filteredLyceums.length, allLyceums.length);
 }
 
