@@ -491,6 +491,8 @@ input[type="radio"], input[type="checkbox"] {
   height: 100%;
 }
 
+.leaflet-tile-pane { filter: grayscale(1); }
+
 /* ── Loading overlay ─────────────────────────────── */
 .loading-overlay {
   position: absolute;
