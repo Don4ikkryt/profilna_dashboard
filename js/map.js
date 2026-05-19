@@ -116,6 +116,12 @@ function addHromadyLayer(geojson) {
     }
   });
   map.on('moveend', () => { mapMoving = false; });
+
+  // Block ALL pointer events on interactive layers during drag at the browser
+  // level — this prevents Leaflet's own bindTooltip handlers from firing,
+  // which the mapMoving flag cannot reach (they are separate internal listeners).
+  map.on('dragstart', () => map.getContainer().classList.add('map-dragging'));
+  map.on('dragend',   () => map.getContainer().classList.remove('map-dragging'));
 }
 
 function addOblastiLayer(geojson) {

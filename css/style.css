@@ -493,6 +493,13 @@ input[type="radio"], input[type="checkbox"] {
 
 .leaflet-tile-pane { filter: grayscale(1); }
 
+/* Disable all pointer events on interactive elements during map drag
+   so Leaflet's internal bindTooltip handlers cannot fire */
+.map-dragging .leaflet-overlay-pane path,
+.map-dragging .leaflet-marker-pane .leaflet-marker-icon {
+  pointer-events: none !important;
+}
+
 /* ── Loading overlay ─────────────────────────────── */
 .loading-overlay {
   position: absolute;
