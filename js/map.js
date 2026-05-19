@@ -1,6 +1,7 @@
 let map, markerLayer, hromadyLayer, oblastiLayer;
+let mapMoving = false;
 
-const UKRAINE_BOUNDS = L.latLngBounds([44.0, 16.0], [52.5, 40.5]);
+const UKRAINE_BOUNDS = L.latLngBounds([44.0, 16.0], [52.5, 46.0]);
 
 // ── Pie marker icon (SVG) ──────────────────────────
 
@@ -95,12 +96,13 @@ function addHromadyLayer(geojson) {
         direction: 'top',
         className: 'hromada-tooltip'
       });
-      layer.on('mouseover', function() { this.setStyle({ color: '#64748b', weight: 1.5, fillOpacity: 0.04 }); });
+      layer.on('mouseover', function() { if (mapMoving) return; this.setStyle({ color: '#64748b', weight: 1.5, fillOpacity: 0.04 }); });
       layer.on('mouseout',  function() { this.setStyle({ color: '#b0b8c8', weight: 0.6, fillOpacity: 0 }); });
     }
   }).addTo(map);
 
   map.on('movestart', () => {
+    mapMoving = true;
     hromadyLayer.eachLayer(l => {
       l.closeTooltip();
       l.setStyle({ color: '#b0b8c8', weight: 0.6, fillOpacity: 0 });
@@ -113,6 +115,7 @@ function addHromadyLayer(geojson) {
       });
     }
   });
+  map.on('moveend', () => { mapMoving = false; });
 }
 
 function addOblastiLayer(geojson) {
@@ -120,7 +123,7 @@ function addOblastiLayer(geojson) {
     renderer: L.canvas(),
     style: { weight: 2, color: '#1a56db', fill: false },
     onEachFeature(feature, layer) {
-      layer.on('mouseover', function() { this.setStyle({ color: '#1346c0', weight: 3 }); });
+      layer.on('mouseover', function() { if (mapMoving) return; this.setStyle({ color: '#1346c0', weight: 3 }); });
       layer.on('mouseout',  function() { this.setStyle({ color: '#1a56db', weight: 2 }); });
     }
   }).addTo(map);
@@ -151,6 +154,7 @@ function updateMarkers(lyceums) {
     });
 
     marker.on('mouseover', function() {
+      if (mapMoving) return;
       this.setIcon(createPieIcon(lyceum.clusters, baseSize + 6));
       this.openTooltip();
     });

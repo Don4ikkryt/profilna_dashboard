@@ -906,8 +906,53 @@ input[type="radio"], input[type="checkbox"] {
 
 .sidebar-overlay.active { display: block; }
 
+/* ── Header lyceum quick-search ──────────────────── */
+.header-lyceum-search {
+  width: 210px;
+  flex-shrink: 0;
+}
+
+.header-lyceum-search .multiselect-btn {
+  background: rgba(255,255,255,.15);
+  border-color: rgba(255,255,255,.3);
+  color: rgba(255,255,255,.85);
+  height: 32px;
+  padding: 4px 10px;
+  gap: 6px;
+}
+
+.header-lyceum-search .multiselect-btn:hover {
+  background: rgba(255,255,255,.22);
+  border-color: rgba(255,255,255,.5);
+  box-shadow: none;
+}
+
+.header-lyceum-search.open .multiselect-btn,
+.header-lyceum-search .multiselect-btn:focus {
+  background: rgba(255,255,255,.22);
+  border-color: rgba(255,255,255,.5);
+  box-shadow: 0 0 0 2px rgba(255,255,255,.25);
+  outline: none;
+}
+
+.header-lyceum-search .multiselect-btn svg { color: rgba(255,255,255,.7); }
+.header-lyceum-search .multiselect-label { color: rgba(255,255,255,.8); font-size: 13px; }
+
+.header-lyceum-search .multiselect-panel {
+  min-width: 300px;
+  left: auto;
+  right: 0;
+  top: calc(100% + 6px);
+  max-height: 300px;
+}
+
+.header-lyceum-search .lyceum-panel {
+  max-height: 300px;
+}
+
 /* ── Responsive ──────────────────────────────────── */
 @media (max-width: 768px) {
+  .header-lyceum-search { display: none; }
   html, body { overflow: hidden; }
 
   .mobile-filter-btn { display: flex; }

@@ -17,6 +17,23 @@
     <div class="header-title">Профільні академічні ліцеї України</div>
   </div>
   <div class="header-spacer"></div>
+
+  <!-- Quick lyceum search -->
+  <div class="header-lyceum-search multiselect" id="dd-header-lyceum">
+    <button type="button" class="multiselect-btn">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <span class="multiselect-label">Пошук закладу…</span>
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="multiselect-panel lyceum-panel">
+      <div class="multiselect-search-wrap">
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="header-lyceum-input" class="multiselect-search" placeholder="Пошук закладу…">
+      </div>
+      <div id="header-lyceum-list" class="multiselect-list"></div>
+    </div>
+  </div>
+
   <div class="header-tabs">
     <button class="header-tab active" data-tab="map">Карта</button>
     <button class="header-tab" data-tab="analytics">Аналітика</button>

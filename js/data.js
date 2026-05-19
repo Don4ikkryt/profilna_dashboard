@@ -26,7 +26,7 @@ function parseProfile(row, headers, n) {
   });
 
   const deepCol = headers.find(h => h.includes(String(n)) && h.toLowerCase().includes('поглибленого'));
-  const electInCol = headers.find(h => h.includes(String(n)) && h.toLowerCase().includes('межах профілю'));
+  const electInCol = headers.find(h => h.includes(String(n)) && h.toLowerCase().includes('вибіркових') && h.toLowerCase().includes('межах профілю'));
   const electOutCol = headers.find(h => h.includes(String(n)) && h.toLowerCase().includes('поза профілем'));
   const studCol = headers.find(h => h.includes(String(n)) && (h.toLowerCase().includes('учнів') || h.toLowerCase().includes('учениць')));
 

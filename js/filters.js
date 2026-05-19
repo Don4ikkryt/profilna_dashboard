@@ -16,6 +16,7 @@ const state = {
 let _oblastSearch  = '';
 let _hromadaSearch = '';
 let _lyceumSearchQuery = '';
+let _headerLyceumQuery = '';
 
 let _trigramIndex = new Map(); // id → Set<trigram>
 
@@ -219,6 +220,42 @@ function renderLyceumList() {
   });
 }
 
+// ── Header lyceum quick-search ────────────────────
+
+function renderHeaderLyceumList() {
+  const container = document.getElementById('header-lyceum-list');
+  if (!container) return;
+  const q = _headerLyceumQuery.toLowerCase().trim();
+  const pool = [...allLyceums].sort((a, b) => a.name.localeCompare(b.name, 'uk'));
+
+  let visible;
+  if (!q) {
+    visible = pool;
+  } else if (q.length <= 3) {
+    visible = pool.filter(l => l.name.toLowerCase().includes(q));
+  } else {
+    visible = pool
+      .map(l => ({ lyceum: l, score: trigramScore(l, q) }))
+      .filter(({ score }) => score >= 0.2)
+      .sort((a, b) => b.score - a.score)
+      .map(({ lyceum }) => lyceum);
+  }
+
+  container.innerHTML = '';
+  if (visible.length === 0) {
+    container.innerHTML = '<div class="multiselect-empty">Нічого не знайдено</div>';
+    return;
+  }
+  visible.forEach(l => {
+    const row = makeSSRow(l.id, l.name, false);
+    row.addEventListener('click', e => {
+      e.stopPropagation();
+      window.location.href = `lyceum.html?id=${encodeURIComponent(l.id)}`;
+    });
+    container.appendChild(row);
+  });
+}
+
 // ── Filter application ─────────────────────────────
 
 function applyFilters() {
@@ -275,6 +312,7 @@ function populateFilters(lyceums) {
   renderOblastList();
   renderHromadaList();
   renderLyceumList();
+  renderHeaderLyceumList();
 }
 
 // ── Bind events ────────────────────────────────────
@@ -312,6 +350,15 @@ function bindFilterEvents() {
       applyFilters();
     });
   });
+
+  // Header lyceum search
+  const headerLyceumInput = document.getElementById('header-lyceum-input');
+  if (headerLyceumInput) {
+    headerLyceumInput.addEventListener('input', e => { _headerLyceumQuery = e.target.value.trim(); renderHeaderLyceumList(); });
+    headerLyceumInput.addEventListener('click', e => e.stopPropagation());
+  }
+  document.querySelector('#dd-header-lyceum .multiselect-btn')
+    ?.addEventListener('click', () => setTimeout(() => document.getElementById('header-lyceum-input')?.focus(), 0));
 
   // Reset
   document.getElementById('btn-reset').addEventListener('click', resetFilters);
