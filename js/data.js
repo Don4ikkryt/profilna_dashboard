@@ -54,6 +54,9 @@ function parseLyceum(row, headers) {
   const hromadaCodeCol = findHeader(headers, 'КАТОТТГ');
   const latCol = headers.find(h => h.trim() === 'latitude');
   const lngCol = headers.find(h => h.trim() === 'longitude');
+  const websiteCol  = findHeader(headers, 'сайт закладу');
+  const phoneCol    = findHeader(headers, 'контактний телефон');
+  const directorCol = findHeader(headers, 'ПІБ директора');
 
   const id = idCol ? (row[idCol] || '').trim() : '';
   const lat = latCol ? parseFloat(row[latCol]) : NaN;
@@ -84,7 +87,10 @@ function parseLyceum(row, headers) {
     isMountain: mountainCol ? parseBool(row[mountainCol]) : false,
     minorityLanguages: minorityCol ? parseBool(row[minorityCol]) : false,
     profiles,
-    clusters
+    clusters,
+    website:  websiteCol  ? (row[websiteCol]  || '').trim() : '',
+    phone:    phoneCol    ? (row[phoneCol]    || '').trim() : '',
+    director: directorCol ? (row[directorCol] || '').trim() : ''
   };
 }
 

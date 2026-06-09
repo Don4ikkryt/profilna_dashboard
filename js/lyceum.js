@@ -13,8 +13,11 @@ function renderInfoTable(lyceum) {
     ['Форма навчання', lyceum.educationForm || '—'],
     ['Наявність пансіону', yesNo(lyceum.hasBoarding)],
     ['Гірський заклад', yesNo(lyceum.isMountain)],
-    ['Навчання мовами нацменшин', yesNo(lyceum.minorityLanguages)]
-  ];
+    ['Навчання мовами нацменшин', yesNo(lyceum.minorityLanguages)],
+    lyceum.director && ['ПІБ директора/директорки', lyceum.director],
+    lyceum.phone    && ['Контактний телефон', lyceum.phone],
+    lyceum.website  && ['Сайт закладу', `<a href="${lyceum.website}" target="_blank" rel="noopener noreferrer" class="btn-website">Відкрити сайт ↗</a>`]
+  ].filter(Boolean);
 
   return `
     <table class="info-table">
@@ -40,9 +43,7 @@ function renderProfiles(profiles) {
       ${profiles.map((p, i) => {
         const color = getClusterColor(p.cluster);
         const fields = [
-          p.deepSubjects    && { label: 'Предмети поглибленого рівня', value: p.deepSubjects },
-          p.electivesWithin && { label: 'Вибіркові в межах профілю',   value: p.electivesWithin },
-          p.electivesOutside && { label: 'Вибіркові поза профілем',     value: p.electivesOutside }
+          p.deepSubjects && { label: 'Предмети поглибленого рівня', value: p.deepSubjects }
         ].filter(Boolean);
 
         return `

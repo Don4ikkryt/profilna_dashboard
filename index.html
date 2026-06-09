@@ -153,6 +153,24 @@
         </div>
       </div>
 
+      <!-- Profile (multi + search, populated dynamically) -->
+      <div class="filter-group">
+        <span class="filter-label">Профіль</span>
+        <div class="multiselect" id="dd-profile">
+          <button type="button" class="multiselect-btn">
+            <span class="multiselect-label">Всі профілі</span>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="multiselect-panel lyceum-panel">
+            <div class="multiselect-search-wrap">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="profile-panel-search" class="multiselect-search" placeholder="Пошук…">
+            </div>
+            <div id="filter-profile-list" class="multiselect-list"></div>
+          </div>
+        </div>
+      </div>
+
       <!-- Education form (multi, populated dynamically) -->
       <div class="filter-group">
         <span class="filter-label">Форма навчання</span>

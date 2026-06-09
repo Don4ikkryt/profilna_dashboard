@@ -8,6 +8,7 @@ const state = {
   lyceums: [],
   locality: '',
   clusters: [],
+  profiles: [],
   educationForms: [],
   boarding: '',
   mountain: ''
@@ -17,6 +18,7 @@ let _oblastSearch  = '';
 let _hromadaSearch = '';
 let _lyceumSearchQuery = '';
 let _headerLyceumQuery = '';
+let _profileSearchQuery = '';
 
 let _trigramIndex = new Map(); // id → Set<trigram>
 
@@ -256,6 +258,38 @@ function renderHeaderLyceumList() {
   });
 }
 
+// ── Profile multiselect with search ───────────────
+
+function renderProfileList() {
+  const container = document.getElementById('filter-profile-list');
+  if (!container) return;
+  const q = _profileSearchQuery.toLowerCase().trim();
+  const allNames = [...new Set(
+    allLyceums.flatMap(l => l.profiles.map(p => p.name).filter(Boolean))
+  )].sort((a, b) => a.localeCompare(b, 'uk'));
+
+  const visible = q ? allNames.filter(n => n.toLowerCase().includes(q)) : allNames;
+
+  container.innerHTML = '';
+  if (visible.length === 0) {
+    container.innerHTML = '<div class="multiselect-empty">Нічого не знайдено</div>';
+    return;
+  }
+  visible.forEach(name => {
+    const label = document.createElement('label');
+    label.className = 'multiselect-option';
+    const checked = state.profiles.includes(name) ? 'checked' : '';
+    label.innerHTML = `<input type="checkbox" data-profile value="${name}" ${checked}> ${name}`;
+    label.querySelector('input').addEventListener('change', cb => {
+      if (cb.target.checked) { if (!state.profiles.includes(name)) state.profiles.push(name); }
+      else { state.profiles = state.profiles.filter(n => n !== name); }
+      updateMultiselectLabel('dd-profile', state.profiles, 'Всі профілі');
+      applyFilters();
+    });
+    container.appendChild(label);
+  });
+}
+
 // ── Filter application ─────────────────────────────
 
 function applyFilters() {
@@ -271,6 +305,10 @@ function applyFilters() {
     if (state.clusters.length > 0) {
       const lc = l.clusters.map(c => c.toLowerCase());
       if (!state.clusters.some(c => lc.some(lcc => lcc.includes(c.toLowerCase()) || c.toLowerCase().includes(lcc)))) return false;
+    }
+    if (state.profiles.length > 0) {
+      const profileNames = l.profiles.map(p => p.name);
+      if (!state.profiles.some(name => profileNames.includes(name))) return false;
     }
     if (state.educationForms.length > 0) {
       const form = (l.educationForm || '').toLowerCase();
@@ -313,6 +351,7 @@ function populateFilters(lyceums) {
   renderHromadaList();
   renderLyceumList();
   renderHeaderLyceumList();
+  renderProfileList();
 }
 
 // ── Bind events ────────────────────────────────────
@@ -342,6 +381,13 @@ function bindFilterEvents() {
     lyceumSearch.addEventListener('click', e => e.stopPropagation());
   }
 
+  // Profile search
+  const profileSearch = document.getElementById('profile-panel-search');
+  if (profileSearch) {
+    profileSearch.addEventListener('input', e => { _profileSearchQuery = e.target.value.trim(); renderProfileList(); });
+    profileSearch.addEventListener('click', e => e.stopPropagation());
+  }
+
   // Clusters
   document.querySelectorAll('[data-cluster]').forEach(cb => {
     cb.addEventListener('change', () => {
@@ -369,9 +415,9 @@ function bindFilterEvents() {
 function resetFilters() {
   Object.assign(state, {
     oblast: '', hromada: '', lyceums: [],
-    locality: '', clusters: [], educationForms: [], boarding: '', mountain: ''
+    locality: '', clusters: [], profiles: [], educationForms: [], boarding: '', mountain: ''
   });
-  _oblastSearch = ''; _hromadaSearch = ''; _lyceumSearchQuery = '';
+  _oblastSearch = ''; _hromadaSearch = ''; _lyceumSearchQuery = ''; _profileSearchQuery = '';
 
   const oblastS = document.getElementById('oblast-search');   if (oblastS)  oblastS.value  = '';
   const hromadaS = document.getElementById('hromada-search'); if (hromadaS) hromadaS.value = '';
@@ -384,14 +430,17 @@ function resetFilters() {
   setSingleLabel('dd-mountain', '', 'Всі');
   updateMultiselectLabel('dd-lyceum',   [], 'Всі заклади');
   updateMultiselectLabel('dd-clusters', [], 'Всі кластери');
+  updateMultiselectLabel('dd-profile',  [], 'Всі профілі');
   updateMultiselectLabel('dd-edu',      [], 'Всі форми');
 
   document.querySelectorAll('.ss-opt').forEach(o => o.classList.toggle('active', o.dataset.value === ''));
-  document.querySelectorAll('[data-cluster],[data-edu]').forEach(cb => cb.checked = false);
+  const profileS = document.getElementById('profile-panel-search'); if (profileS) profileS.value = '';
+  document.querySelectorAll('[data-cluster],[data-edu],[data-profile]').forEach(cb => cb.checked = false);
 
   renderOblastList();
   renderHromadaList();
   renderLyceumList();
+  renderProfileList();
   applyFilters();
 }
 
