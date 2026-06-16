@@ -65,7 +65,7 @@ function parseLyceum(row, headers) {
   if (!id || isNaN(lat) || isNaN(lng)) return null;
 
   const profiles = [];
-  for (let i = 1; i <= 6; i++) {
+  for (let i = 1; i <= 7; i++) {
     const p = parseProfile(row, headers, i);
     if (p) profiles.push(p);
   }
