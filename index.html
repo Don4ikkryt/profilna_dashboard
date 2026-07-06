@@ -6,7 +6,24 @@
   <title>Академічні ліцеї України</title>
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="https://cdn.maptiler.com/maptiler-sdk-js/latest/maptiler-sdk.css">
   <link rel="stylesheet" href="css/style.css">
+
+  <!-- Resolve the bare "leaflet" import (used by the MapTiler ESM plugin) to the
+       already-loaded global L, so we don't ship two copies of Leaflet. -->
+  <script type="importmap">
+  {
+    "imports": {
+      "leaflet": "./js/leaflet-shim.js"
+    }
+  }
+  </script>
+  <script type="module">
+    import { maptilerLayer, Language, MapStyle }
+      from 'https://esm.sh/@maptiler/leaflet-maptilersdk@4.1.1?external=leaflet';
+    // Expose to the classic (non-module) scripts that build the map.
+    window.MaptilerLeaflet = { maptilerLayer, Language, MapStyle };
+  </script>
 </head>
 <body>
 
