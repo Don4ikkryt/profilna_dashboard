@@ -82,7 +82,7 @@ function initMap() {
   // which is why Crimea showed up in Russian). See index.html import map.
   const mt = window.MaptilerLeaflet;
   mt.maptilerLayer({
-    apiKey: '81fALoIh29RunLjrfPcm',
+    apiKey: 'HnNR5EHI6x9x8OQ1fcOV',
     style: mt.MapStyle.STREETS,
     language: mt.Language.UKRAINIAN
   }).addTo(map);
